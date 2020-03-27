@@ -1,0 +1,114 @@
+<html>
+<head>
+<!-- Styles -->
+<link href="https://kendo.cdn.telerik.com/2019.3.1023/styles/kendo.common.min.css" rel="stylesheet" />
+<link href="https://kendo.cdn.telerik.com/2019.3.1023/styles/kendo.default.min.css" rel="stylesheet" />
+<!-- JavaScript-->
+<script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2019.3.1023/js/kendo.all.min.js"></script>
+
+<script type="text/javascript">
+	var token;
+    $(document).ready(function() {
+        requestToken();
+    });
+
+    function requestToken() {
+
+        $.ajax({
+            "async": true,
+            "crossDomain": true,
+            "url": "https://cors-anywhere.herokuapp.com/https://login.microsoftonline.com/girdhar.onmicrosoft.com/oauth2/v2.0/token", // Pass your tenant name instead of sharepointtechie  
+            "method": "POST",
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded"
+            },
+            "data": {
+                "grant_type": "client_credentials",
+                "client_id ": "806ac681-5261-4302-a854-6bbdd5a59db1", //Provide your app id  
+                "client_secret": "tokZFvDvT656xthS_4zzct.EHMkv.:pV", //Provide your secret  
+                "scope ": "https://graph.microsoft.com/.default"
+            },
+            success: function(response) {
+                console.log(response);
+                token = response.access_token;
+                    console.log(token);
+           //     RetrieveCalendarEvents();
+            },
+            error: function(error) {
+                console.log(JSON.stringify(error));
+            }
+        })
+    }
+     
+
+    function CreateCalendarEvents() {
+    
+
+    var sdate = new Date($('#datetimepicker').val()) 
+
+     var edate = new Date($('#datetimepicker1').val())
+
+   
+
+     var subject = $('#subject').val()
+     var body = $('#Body').val()
+
+	 var data = { "subject": subject, "start": { "dateTime": sdate.toISOString(), "timeZone": "UTC"
+	}, "end": { "dateTime": edate.toISOString(), "timeZone": "UTC" }, body: {content: body}}
+
+        $.ajax({
+            method: 'POST',
+            url: "https://graph.microsoft.com/v1.0/users/pratik@girdhar.onmicrosoft.com/events",
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data),
+            success: function(response) {
+              alert("Event Created")
+              location.reload();
+            },
+            error: function(error) {
+            console.log("error", JSON.stringify(error))
+            },
+        })
+    
+    }
+
+</script>
+</head>
+<body>
+
+<div id="example">
+<div class="demo-section k-content">
+    <h1>Create Outlook Calendar</h1>
+    <h4>Event Start Date and Time:</h4>
+       <input id="datetimepicker" title="datetimepicker" style="width: 100%;" /><br/>
+       <h4>Event End Date and Time:
+       <input id="datetimepicker1" title="datetimepicker1" style="width: 100%;" /></h4><br/>
+       <h4> Event Subject:
+       <input id="subject" type="text" name="subject" style="width: 100%;" /></h4><br/>
+       
+        <h4> Body:
+        <input id="Body" type="text" name="Body" style="width: 100%;" /></h4><br/>
+       <button type="button" id="btndate" onclick="CreateCalendarEvents();">Create Events</button>
+      
+</div>
+</body>
+</html>
+<script>
+    $( function() {
+$("#datetimepicker").kendoDateTimePicker({
+                        value: new Date(),
+                        dateInput: true
+                    });
+   
+                    $("#datetimepicker1").kendoDateTimePicker({
+                        value: new Date(),
+                        dateInput: true
+                    });
+
+    });
+</script>
+                   
